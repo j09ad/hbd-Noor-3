@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>مشروع العمر لنور 🎉</title>
+    <style>
+        :root { 
+            --pink-dark: #db7093; 
+            --burgundy: #800020;
+            --glass: rgba(255, 255, 255, 0.1);
+            --wrong-red: rgba(244, 67, 54, 0.8);
+            --correct-green: rgba(76, 175, 80, 0.8);
+            --anger-red: #4a0000;
+        }
+        
+        body { 
+            background-color: var(--pink-dark); 
+            transition: background 0.4s ease;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            height: 100vh; margin: 0; font-family: 'Segoe UI', sans-serif; 
+            color: white; overflow: hidden; text-align: center;
+            box-shadow: inset 0 0 150px rgba(0,0,0,0.5);
+            touch-action: manipulation;
+        }
+
+        .screen-shake-active { animation: screenShakeAnim 0.15s ease-in-out infinite; }
+        @keyframes screenShakeAnim {
+            0% { transform: translate(2px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(0px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(2px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(2px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+
+        .disco-bg { animation: discoAnim 1.2s linear infinite !important; }
+        @keyframes discoAnim {
+            0% { background-color: #db7093; }
+            20% { background-color: #9b59b6; }
+            40% { background-color: #3498db; }
+            60% { background-color: #2ecc71; }
+            80% { background-color: #f1c40f; }
+            100% { background-color: #e74c3c; }
+        }
+
+        .stats { position: absolute; top: 20px; width: 90%; display: flex; justify-content: space-between; font-size: 1.1rem; font-weight: 900; z-index: 10; }
+
+        .float-num { position: fixed; top: 40px; right: 5%; font-size: 1.5rem; font-weight: bold; pointer-events: none; z-index: 10000; animation: floatUpFade 1s ease-out forwards; }
+        .float-neg { color: #ff4d4d; }
+        .float-pos { color: #2ecc71; }
+        @keyframes floatUpFade { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-40px) scale(1.3); opacity: 0; } }
+
+        .message-box { 
+            font-size: 1.4rem; font-weight: bold; width: 330px; min-height: 250px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 25px; background: var(--glass); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border-radius: 35px; border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3); position: relative; z-index: 20;
+            transition: background 0.3s ease, border 0.3s ease;
+        }
+
+        .slide-in { animation: slideIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .slide-out { animation: slideOut 0.5s ease-in forwards; }
+        @keyframes slideIn { from { transform: translateY(100vh); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes slideOut { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-100vh); opacity: 0; } }
+        
+        .wrong-state { background: var(--wrong-red) !important; animation: shake 0.4s ease-in-out; border: 2px solid #ff4d4d; }
+        .correct-state { background: var(--correct-green) !important; border: 2px solid #2ecc71; }
+        
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-12px); } 75% { transform: translateX(12px); } }
+
+        .totem-img-style { position: fixed; bottom: -300px; left: 50%; transform: translateX(-50%); width: 220px; height: 220px; object-fit: cover; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.5); z-index: 1000; display: none; pointer-events: none; }
+        .anger-active { display: block; animation: totemMinecraftStyle 2.2s cubic-bezier(0.15, 0.85, 0.35, 1) forwards; }
+
+        @keyframes totemMinecraftStyle {
+            0% { bottom: -300px; opacity: 0; transform: translateX(-50%) scale(0.3) rotate(0deg); }
+            15% { bottom: 35%; opacity: 1; transform: translate(-50%, 0) scale(1.6) rotate(-10deg); }
+            25% { transform: translate(-45%, -5px) scale(1.4) rotate(15deg); }
+            35% { transform: translate(-55%, 5px) scale(1.5) rotate(-15deg); }
+            45% { transform: translate(-48%, -3px) scale(1.4) rotate(10deg); }
+            55% { transform: translate(-52%, 2px) scale(1.45) rotate(-10deg); }
+            65% { bottom: 40%; opacity: 1; transform: translate(-50%, 0) scale(1.4) rotate(0deg); }
+            100% { bottom: 120vh; opacity: 0; transform: translate(-50%, -100px) scale(0.6) rotate(5deg); }
+        }
+
+        .fx-img { position: fixed; width: 120px; height: 120px; object-fit: cover; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.4); z-index: 995; display: none; pointer-events: none; }
+        
+        .img-heart-active { display: block; animation: flyLeftToRight 3s linear forwards; }
+        @keyframes flyLeftToRight {
+            0% { left: -150px; top: 40%; transform: rotate(0deg) scale(0.8); }
+            50% { transform: rotate(180deg) scale(1.2); }
+            100% { left: calc(100vw + 150px); top: 40%; transform: rotate(360deg) scale(0.8); }
+        }
+
+        .img-phone-active { display: block; animation: bounceToCeiling 4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+        @keyframes bounceToCeiling {
+            0% { right: 5%; bottom: -150px; transform: scale(0.7) rotate(0deg); }
+            15% { right: 15%; bottom: 20%; transform: scale(1.1) rotate(-10deg); }
+            45% { right: 50%; bottom: calc(100vh - 140px); transform: scale(1.3) rotate(15deg); } 
+            55% { right: 60%; bottom: calc(100vh - 140px); transform: scale(1.3) rotate(-15deg); }
+            80% { right: 85%; bottom: 20%; transform: scale(1.1) rotate(10deg); }
+            100% { right: calc(100vw + 150px); bottom: -150px; transform: scale(0.7) rotate(0deg); }
+        }
+
+        .manga-combo {
+            position: fixed; pointer-events: none; font-size: 2.8rem; font-weight: 900;
+            font-style: italic; color: #ffeb3b; -webkit-text-stroke: 2px #000;
+            text-shadow: 4px 4px 0px #e74c3c; z-index: 99999;
+            transform: scale(0); animation: mangaPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.5) forwards;
+        }
+        @keyframes mangaPop {
+            0% { transform: translate(-50%, -50%) scale(0) rotate(-20deg); opacity: 0; }
+            50% { transform: translate(-50%, -65%) scale(1.3) rotate(15deg); opacity: 1; }
+            100% { transform: translate(-50%, -90%) scale(1) rotate(-5deg); opacity: 0; }
+        }
+
+        .cat-gif { 
+            width: 140px; height: 140px; border-radius: 20px; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4); display: none; 
+            position: fixed; cursor: grab; user-select: none; z-index: 9999;
+        }
+        .cat-gif:active { cursor: grabbing; }
+
+        #bounce-guide { display: none; font-size: 1.1rem; color: #fff; background: rgba(0,0,0,0.6); padding: 8px 15px; border-radius: 20px; margin-bottom: 15px; font-weight: bold; }
+
+        .letter-modal {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0);
+            width: 85%; max-width: 400px; background: #fff; color: #333; padding: 30px 20px;
+            border-radius: 25px; box-shadow: 0 30px 60px rgba(0,0,0,0.6); z-index: 100000;
+            direction: rtl; text-align: right; overflow-y: auto; max-height: 80vh;
+            border: 5px solid #ffb6c1; transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .letter-modal.open { transform: translate(-50%, -50%) scale(1); }
+        .letter-text { font-size: 1.15rem; line-height: 1.8; font-weight: bold; color: #444; white-space: pre-line; }
+        .letter-date { text-align: left; font-size: 0.95rem; color: #888; margin-top: 15px; font-weight: bold; }
+
+        .stats-modal {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0);
+            width: 80%; max-width: 350px; background: rgba(0, 0, 0, 0.92); color: #fff; padding: 25px;
+            border-radius: 25px; border: 2px solid var(--pink-dark); text-align: center; z-index: 100005;
+            transition: transform 0.4s ease;
+        }
+        .stats-modal.open { transform: translate(-50%, -50%) scale(1); }
+        .stat-line { font-size: 1.2rem; margin: 12px 0; font-weight: bold; }
+
+        .heart-fly { position: absolute; pointer-events: none; font-size: 50px; animation: heartAnim 0.8s ease-out forwards; z-index: 5000; }
+        @keyframes heartAnim { 0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; } 20% { transform: translate(-50%, -60%) scale(1.2); opacity: 1; } 100% { transform: translate(-50%, -250%) scale(1.5); opacity: 0; } }
+
+        .ghost-img-style { position: fixed; width: 280px; height: 280px; object-fit: cover; border-radius: 35px; box-shadow: 0 25px 50px rgba(0,0,0,0.7); z-index: 9999; display: none; pointer-events: none; }
+        .ghost-active { display: block; animation: ghostZoom 1.2s ease-out forwards; }
+        @keyframes ghostZoom { 0% { transform: translate(-50%, -50%) scale(0.1); left: 50%; top: 50%; opacity: 0; } 50% { transform: translate(-50%, -50%) scale(1.8); left: 50%; top: 50%; opacity: 1; } 100% { transform: translate(-50%, -50%) scale(0); left: 50%; top: 50%; opacity: 0; } }
+
+        .timer-container { width: 90%; background: rgba(255,255,255,0.2); height: 12px; border-radius: 6px; margin-top: 15px; overflow: hidden; display: none; }
+        .timer-bar { width: 0%; height: 100%; background: #ffeb3b; transition: width 0.1s linear; }
+
+        input[type="text"] { width: 85%; padding: 12px; margin: 10px 0; border-radius: 12px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: white; text-align: center; outline: none; }
+        .btn-main { background: var(--pink-dark); color: white; border: none; padding: 12px 25px; border-radius: 15px; margin-top: 10px; cursor: pointer; font-weight: bold; width: 90%; transition: transform 0.2s; }
+        .btn-main:hover { transform: scale(1.05); }
+        .btn-skip { background: none; border: none; color: rgba(255,255,255,0.6); margin-top: 15px; cursor: pointer; font-size: 0.9rem; }
+        .btn-evade { min-width: 140px; white-space: nowrap; z-index: 9999; }
+
+        .audio-controls { position: fixed; bottom: 20px; left: 20px; display: flex; align-items: center; gap: 10px; z-index: 10000; background: var(--glass); padding: 5px 15px 5px 5px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(10px); }
+        .mute-btn { background: none; border: none; font-size: 22px; cursor: pointer; color: white; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; }
+        .vol-slider { width: 80px; cursor: pointer; accent-color: var(--pink-dark); }
+
+        .peek-img-container {
+            position: fixed; right: -160px; top: 40%; width: 140px; height: 140px; z-index: 999;
+            transition: right 0.5s cubic-bezier(0.25, 1, 0.5, 1); pointer-events: none;
+        }
+        .peek-active { right: 10px; }
+        .peek-img-container img { width: 100%; height: 100%; object-fit: cover; border-radius: 25px; box-shadow: -5px 10px 20px rgba(0,0,0,0.3); }
+
+        .mosquito {
+            position: fixed; width: 70px; height: 70px; z-index: 99998;
+            cursor: pointer; display: none; user-select: none;
+            animation: smoothMosquitoFly 4s ease-in-out infinite alternate;
+        }
+        @keyframes smoothMosquitoFly {
+            0% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(40px, -30px) scale(1.05); }
+            50% { transform: translate(-20px, 50px) scale(0.95); }
+            75% { transform: translate(50px, 20px) scale(1.1); }
+            100% { transform: translate(-30px, -40px) scale(1); }
+        }
+        .mosquito-hit { filter: brightness(0.6) sepia(1) saturate(600%) hue-rotate(-50deg); }
+        
+        .mc-hearts-container {
+            position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 2px; justify-content: center; width: 100px; pointer-events: none;
+        }
+        .mc-heart {
+            width: 12px; height: 12px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 9 9"><path d="M2,0h1v1h1v1h1V1h1V0h1v1h1v2H7v1H6v1H5v1H4V5H3V4H2V3H1V1H2V0z" fill="%23ff0000"/><path d="M2,1H1v2h1V1z M7,1H6v2h1V1z" fill="%23ffffff"/></svg>');
+            background-size: contain; background-repeat: no-repeat;
+        }
+
+        /* --- أنيميشن انفجار جزيئات الموت والضرر الجديدة --- */
+        .dead-particle {
+            position: fixed; pointer-events: none; z-index: 100001; font-size: 24px;
+            animation: burstParticleAnim 0.6s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+        }
+        @keyframes burstParticleAnim {
+            0% { transform: translate(-50%, -50%) scale(1) translate(0, 0); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(0.3) translate(var(--x), var(--y)); opacity: 0; }
+        }
+    </style>
+</head>
+<body onclick="handleGlobalClick(event)">
+
+<audio id="snd-correct" src="https://www.myinstants.com/media/sounds/correct.mp3"></audio>
+<audio id="snd-wrong" src="https://www.myinstants.com/media/sounds/wrong-answer.mp3"></audio>
+<audio id="snd-click" src="click.wav"></audio>
+<audio id="snd-scary" src="scary.mp3"></audio>
+
+<audio id="snd-angry" src="angry.mp3"></audio>
+<audio id="snd-67" src="67.mp3"></audio>
+<audio id="snd-heart" src="heart.mp3" preload="auto"></audio>
+<audio id="snd-phone" src="phone.mp3" preload="auto"></audio>
+<audio id="snd-timer" src="timer.mp3" loop preload="auto"></audio>
+<audio id="snd-badawi" src="badawi.mp3" preload="auto"></audio>
+
+<audio id="snd-meow" src="meow.mp3" preload="auto"></audio>
+<audio id="snd-khayarouni" src="khayarouni.mp3" preload="auto"></audio>
+<audio id="snd-haleela" src="haleela.mp3" preload="auto"></audio>
+<audio id="snd-mosquito" src="mosquito.mp3" loop preload="auto"></audio>
+<audio id="snd-hit" src="hit.mp3" preload="auto"></audio>
+
+<audio id="bg-music" autoplay></audio>
+
+<div class="audio-controls" onclick="event.stopPropagation()">
+    <button id="mute-btn" class="mute-btn" onclick="toggleMute(event)">🔊</button>
+    <input type="range" id="vol-slider" class="vol-slider" min="0" max="1" step="0.05" value="1" oninput="changeVol(event)">
+</div>
+
+<div class="stats">
+    <div id="hearts-wrapper">❤️ القلوب: <span id="lives">5</span></div>
+    <div>الضغطات: <span id="click-count">0</span>/100</div>
+</div>
+
+<img id="img-totem" class="totem-img-style" src="totem.jpg" alt="Angry Cat Totem">
+<img id="img-ghost" class="ghost-img-style" src="ghost.jpg" alt="Scary Cat Ghost">
+
+<img id="img-heart" class="fx-img" src="heart.jpg" alt="Heart Dynamic">
+<img id="img-phone" class="fx-img" src="phone.jpg" alt="Phone Dynamic">
+
+<img id="cat-hbd" class="cat-gif" src="cat.gif" alt="HBD Cat" onmousedown="startDrag(event)" ontouchstart="startDrag(event)">
+
+<div id="target-mosquito" class="mosquito" onclick="hitMosquito(event)">
+    <div id="mc-hearts" class="mc-hearts-container"></div>
+    <img src="mosquito.png" style="width:100%; height:100%; object-fit:contain;" alt="Mosquito">
+</div>
+
+<div id="peek-box" class="peek-img-container">
+    <img src="haleela.png" alt="Haleela Peek">
+</div>
+
+<div class="message-box slide-in" id="main-box">
+    <div id="bounce-guide">اخبط البسة بالحواف الأربعة للشاشة عشان تفتح الهدية! 🐾</div>
+    <div id="text-display">وراك 100 كبسة نرنر 😋 يلا شدي حيلك</div>
+    <div id="interactive-area"></div>
+    <div id="t-container" class="timer-container"><div id="t-bar" class="timer-bar"></div></div>
+</div>
+
+<div class="letter-modal" id="letter-card" onclick="event.stopPropagation()">
+    <div class="letter-text" id="typed-content"></div>
+    <div class="letter-date">24/5/2026</div>
+    <button class="btn-main" style="margin-top:25px; background:#e74c3c;" onclick="showStatsSummary()">رؤية إحصائيات اللعبة 📊</button>
+</div>
+
+<div class="stats-modal" id="stats-card" onclick="event.stopPropagation()">
+    <h3 style="margin-top:0; color:var(--pink-dark); font-size:1.5rem;">🏆 تقرير الأداء النهائي</h3>
+    <div class="stat-line">الأجوبة الصح: <span id="stat-correct" style="color:#2ecc71;">0</span></div>
+    <div class="stat-line">الأجوبة الغلط: <span id="stat-wrong" style="color:#ff4d4d;">0</span></div>
+    <div class="stat-line">الوقت المستغرق: <span id="stat-time" style="color:#3498db;">00:00</span></div>
+    <div class="stat-line" style="font-size:1.35rem; border-top:1px dashed #555; padding-top:12px; margin-top:15px;">السكور النهائي (القلوب): <span id="stat-score" style="color:#ffeb3b;">0</span></div>
+    <button class="btn-main" onclick="location.reload()">إعادة التجربة 🔄</button>
+</div>
+
+<script>
+    let clicks = 0; let lives = 5; let isPaused = false;
+    let extraUsed = false;
+    
+    let evadeStep = 0;
+    let speedChallengeActive = false;
+    let speedClicks = 0;
+    let speedTimer = null;
+    let currentThemeParticle = '💖';
+    let q22WrongCount = 0;
+    let trap99Used = false; 
+
+    let correctAnswersCount = 0;
+    let wrongAnswersCount = 0;
+    let startTime = null;
+
+    let lastClickTime = 0;
+    let comboCount = 0;
+
+    let cat = { x: 0, y: 0, vx: 0, vy: 0, width: 140, height: 140, isDragging: false };
+    let dragData = { startX: 0, startY: 0, lastX: 0, lastY: 0, lastTime: 0 };
+    let hitEdges = { top: false, bottom: false, left: false, right: false };
+    let finalLoopId = null;
+
+    let mosquitoHp = 5;
+    let mosquitoActive = false;
+    let mosquitoTriggerClick = 15; 
+
+    const pool = [
+       "خلص يكفي احبك... بعشقك", "يابو صلني سنه استنا يوم ميلادك هففف", "نور بس مطفيه هه هه هه", "فاجأتك بالهديه صح؟", 
+        "انا متأكد قاعده تضحكي هسا", "ادعيلي عشغل ايدي يلا يلا ويله", "كبسهههه يمي يمي يمي", "اعطيني تليفونك", 
+        "يختييي محلاها", "يقلبيي حسيتك خجلانه و فرحانه", "وليه اشتقتلك", "لازم نطلع و اعزمك عماتشا", 
+        "كيف بس الحركات لا تغششي حدا الموقع", "نور جد انتي احلى اشيي بحياتيي", "في ناموسه تحوم حولي", "تذكري لما كنت اقلك تشبهي البسه الهملايا", 
+        "دايما افكر فيك بكل يوم", "والله ما ادري كيف رح تكون حياتي من دونك", "مرات احس مو مصدق اني عندي حدا زيك", "يابو معقول تتخلي عني ؟", 
+        "كل عام و احلى نور بالدينا بخير", "حلتيتيي مواح", "مح مح مح", "ورق عنبببب !!!", "تف عالدراسه الي ما تخليني احكي معك", 
+        "يحرام توجيهي السنه الجاي هههههه", "حليله", "الهديه عالقد يعني السنه الجاي احاول اشي احسن ☺️", "بالله مو مستمتعه؟؟", 
+        "لد مين تكبس احلى بنت بالدنياااا", "ياخي كيف هيك ذكيه و حلوه", "احس مستحيل في كلمات تكفيكك", "يابو شو ما تعبت ما حقدر اوفيك حقك", 
+        "يالله شو نفسي اطبخ معك", "بدي ادعس عليك عشان اكون اول واحد يدعس عالقمر ههههههههههههههههه اعرف مبتذله اسف 😋", "يابو الشغل هاض بمصاري", "يابو شو قصة اليوم كله حلو معقول عشانك", 
+        "لد لد الي مو ضايفني انستا", "نور = سلايم لونه بينك", "نرنر تقرأ احس شكلها كيوت", "يابو اجتني فكره تفتحي شيرواشوف ردة فعلك", 
+        "ياخي جد مو مستوعب كيف الدنيا متحملة جملك", "الشمس بالسما و نورها بقلبي ولا؟", "انت بدوي يلا انت حيه هلا هلا", "صل على محمد", 
+        "الحياه اسهل لو انتي معي هون", "يابو معقول السنه الجاي نكون مع بعض", "نور لا تتركينييي لااااا", "تعرفي الجو شو بده ... بده اياك اخخ", 
+        "علي امتحان تاريخ و قاعد ازبط بهديتك", "يزعد قلبق", "يابو نفسي اكون شاعر عشان اظل اكتبلك", "يابو بدي توعيديني ما تحكي مغير بقار", 
+        "نفسي امسك خدودك اعضهن", "يابو ما توقعت احب حدا لهدرجه", "اخبار الثامنه ؟", "يابو تعالي نلعب روبلوقس", 
+        "لو خيروني بين نور و الدنيا و ما بيها اختار نور لانها الدنيا و ما بيها", "يابو بالله مو اني فنان", "رورو تحكيلي نور عالسطح", "لفيو والله قد الكوكبببب",
+        "معقول جاوبتي كل الأسئلة امم ما اتوقع ههههههههه", "نرنر ابعثيلي الفيدباك لما تخلصي", "أكيد اللعبه 10/10",
+        "قال ريد ديد احسن لعبة شكلهم ما شافوا شغلي", "بس لو في منك اثنين بالكوكب كان الدينا بخير", "لسا تحكي مع حمزة 😔؟",
+        "تعي نقعد بالفي مش لحدا هالفي", "يا رب جاد يجيب الاول على المملكه", "يابو اذا افترقنا هل رح ترجعي تلعبي هاي اللعبه ؟",
+        "ثلاث شهور مع بعض بس حاس كأنا امبارح حكينا", "يابو في كم جمله كرنجيه كتبتها بس مشيلي اياها", "ابعثيلي رقم ابوك حالا",
+        "ليش رافضه فكرة التواصل علانستا ؟", "يقلبيي بدي اعض خدودك", "نعمل شاي و نقعد بدار الدكتور المهجورة علمطل 😋",
+        "نور من يوم ما بطلت اكتب عنك و انا حاس حالي مقصر", "في جرعة تخوث باللعبه يعني لازم ئي مو حلو كله مدح",
+        "يلا قولي جاد يسلمو ايديك ايوه شطورة", "الحمدله تعبت عاشي يستاهل 🥹", "انتي من الصواريخ الي نزلت 😝",
+        "تصدقي اللعبة تجنن مستمتع وانا اللعبه اتمنى انتي كمان يعنيي",
+        "لازم افكر من هسا شو هدية السنه الجاي", " هاظ احلى و احسن و اجمل و ايش كمان اروع مشروع سويته بحياتي",
+        "مياو مياو", "زمان ما لعبنا فورت صح ؟! زمان ما لعبنا اصلا هههههههههههه", "استمتعي استمتعي بحياتك قبل التوجيهي",
+        "يابو ترا اللعبه فيها تفاصيل يعني انتبهي", "شوف شوف حلتيته تلعب", "يزم هو كل 24/5 لازم الحياه تصير حلوه هيك",
+        "يابو الدنيا فيها كثير نورات بس انتي احسن نور", "نور يعني انتي نوريه هههه ههههه", "بدك تدرسي رياضيات اليوم ؟",
+        "ليه انتي كثير حلوه ؟؟", "يابو كل مره تنسيني او تشتاقيلي فوتي شيكي علموقع", "هل تقترحي اكبر اللعبه اكثر ولا اخليها زي ما هي خلص لذكرة"
+    ];
+    let available = [...pool];
+
+    const questions = {
+        10: { q: "متى يوم ميلادي؟", a: ["30/12"] },
+        20: { q: "اول مره حكينا فيها؟", a: ["22/7/2025"] },
+        30: { q: "لوني المفضل يا حلتيته? ", a: ["سماوي", "ازرق سماوي"] },
+        40: { q: "قديش احبك من عشره؟", a: ["يابو الارقام ما تقيم حبك 🥹"] },
+        50: { q: "الايموجي الي احبه؟", a: ["🥹"] },
+        60: { q: "لو بدنا نسافر وين تتوقعي اوديك؟", a: ["اسبانيا"] },
+        70: { q: "ليه انتِ حلتيته؟", a: ["ما دخلك"] },
+        80: { q: "الفيرست ديت؟", a: ["بجبل النزهة"] },
+        90: { q: " (٣ كلمات تحبيهن (خلي مسافه بينهم)) ", isCustomThreeWords: true },
+        100: { q: "كلمه تحكيلي اياها عشان التعب؟", a: ["بحبك"] }
+    };
+
+    const playlist = ["bg-music1.mp3", "bg-music2.mp3", "bg-music3.mp3"];
+    let currentTrack = 0; let musicStarted = false; let isMuted = false;
+
+    function initMusic() {
+        const bgMusic = document.getElementById('bg-music');
+        bgMusic.src = playlist[currentTrack];
+        bgMusic.volume = document.getElementById('vol-slider').value;
+        bgMusic.play().catch(e=>{});
+        bgMusic.onended = function() {
+            currentTrack++; if(currentTrack >= playlist.length) currentTrack = 0;
+            bgMusic.src = playlist[currentTrack]; bgMusic.play();
+        };
+    }
+
+    function toggleMute(e) {
+        isMuted = !isMuted;
+        document.getElementById('bg-music').muted = isMuted;
+        if(mosquitoActive) document.getElementById('snd-mosquito').muted = isMuted;
+        document.getElementById('mute-btn').innerText = isMuted ? "🔇" : "🔊";
+    }
+
+    function changeVol(e) {
+        const vol = e.target.value;
+        document.getElementById('bg-music').volume = vol;
+        document.getElementById('snd-mosquito').volume = vol;
+        if (vol == 0) { isMuted = true; document.getElementById('mute-btn').innerText = "🔇"; }
+        else { isMuted = false; document.getElementById('bg-music').muted = false; document.getElementById('mute-btn').innerText = "🔊"; }
+    }
+
+    function floatNumber(text, isPositive) {
+        const el = document.createElement('div');
+        el.innerText = text; el.className = 'float-num ' + (isPositive ? 'float-pos' : 'float-neg');
+        document.body.appendChild(el); setTimeout(() => el.remove(), 1000);
+    }
+
+    function triggerMangaComboText(x, y) {
+        const pop = document.createElement('div');
+        pop.className = 'manga-combo'; pop.innerText = "كـومـبـو! ⚡";
+        pop.style.left = x + 'px'; pop.style.top = y + 'px';
+        document.body.appendChild(pop); setTimeout(() => pop.remove(), 600);
+    }
+
+    /* --- دالة توليد تأثير انفجار الجزيئات (تستخدم للناموسة وللقلب المنفجر) --- */
+    function triggerExplosionParticles(x, y, emojiStr, count = 12) {
+        for (let i = 0; i < count; i++) {
+            const p = document.createElement('div');
+            p.className = 'dead-particle';
+            p.innerHTML = emojiStr;
+            p.style.left = x + 'px';
+            p.style.top = y + 'px';
+            
+            // زوايا ومسافات تناثر عشوائية دائرية للانفجار
+            const angle = Math.random() * Math.PI * 2;
+            const distance = 40 + Math.random() * 90;
+            const moveX = Math.cos(angle) * distance + 'px';
+            const moveY = Math.sin(angle) * distance + 'px';
+            
+            p.style.setProperty('--x', moveX);
+            p.style.setProperty('--y', moveY);
+            
+            document.body.appendChild(p);
+            setTimeout(() => p.remove(), 600);
+        }
+    }
+
+    function handleGlobalClick(e) {
+        if (!musicStarted) { initMusic(); musicStarted = true; startTime = new Date(); }
+        if (mosquitoActive) return; 
+
+        const now = Date.now();
+        if (now - lastClickTime < 300) { comboCount++; } else { comboCount = 1; }
+        lastClickTime = now;
+
+        if (speedChallengeActive) {
+            e.stopPropagation(); speedClicks++;
+            document.getElementById('snd-click').currentTime = 0; document.getElementById('snd-click').play().catch(o=>{});
+            currentThemeParticle = (Math.random() > 0.5) ? '⏰' : '⏳';
+            createParticle(e.clientX, e.clientY);
+            if (comboCount >= 5) { triggerMangaComboText(e.clientX, e.clientY); }
+            document.getElementById('text-display').innerText = `يلا يلا اكبس 25 كبسة زي الشاطرة\nالعداد: (${speedClicks}/25)`;
+            if (speedClicks >= 25) endSpeedChallenge(true);
+            return;
+        }
+
+        if (isPaused || clicks >= 100 || document.getElementById('answer-input') || e.target.classList.contains('btn-evade') || e.target.closest('.audio-controls')) return;
+        
+        clicks++; document.getElementById('click-count').innerText = clicks;
+        document.body.style.backgroundColor = (clicks % 2 === 0) ? "var(--pink-dark)" : "var(--burgundy)";
+        
+        if (comboCount >= 5) {
+            currentThemeParticle = (Math.random() > 0.5) ? '🔥' : '🚀';
+            triggerMangaComboText(e.clientX, e.clientY);
+        } else {
+            currentThemeParticle = '💖';
+        }
+        createParticle(e.clientX, e.clientY);
+
+        if (clicks === mosquitoTriggerClick) {
+            startMosquitoMiniGame();
+            return;
+        }
+
+        let nextTargetMsg = "";
+        if (clicks > 3 && !questions[clicks] && clicks !== 22 && clicks !== 42 && clicks !== 55 && clicks !== 34 && clicks !== 99) {
+            if (available.length === 0) available = [...pool];
+            nextTargetMsg = available[Math.floor(Math.random() * available.length)];
+        }
+
+        updateLogic(clicks, nextTargetMsg);
+    }
+
+    function updateLogic(n, forcedMsg) {
+        const text = document.getElementById('text-display');
+        const area = document.getElementById('interactive-area');
+        const box = document.getElementById('main-box');
+        
+        box.classList.remove('wrong-state', 'correct-state');
+        area.innerHTML = ""; document.getElementById('t-container').style.display = "none";
+        
+        if (n === 22) {
+            isPaused = true; q22WrongCount = 0; text.innerText = "شو تعتبري حالك من هاضول؟";
+            area.innerHTML = `<button class="btn-main" onclick="handleQ22(1, event)">1. دونات 🍩</button><button class="btn-main" onclick="handleQ22(2, event)">2. بسه هملايا 🐱</button><button class="btn-main" onclick="handleQ22(3, event)">3. حلتيته 🧂</button>`;
+            return;
+        }
+
+        if (n === 42) {
+            isPaused = true; speedChallengeActive = true; speedClicks = 0;
+            text.innerText = "يلا يلا اكبس 25 كبسة زي الشاطرة\nالعداد: (0/25)"; document.getElementById('t-container').style.display = "block";
+            const tSnd = document.getElementById('snd-timer');
+            if(tSnd) { tSnd.currentTime = 0; tSnd.play().catch(e=>{}); }
+            let timeLeft = 100; const bar = document.getElementById('t-bar'); bar.style.width = "0%";
+            speedTimer = setInterval(() => { timeLeft -= 1; bar.style.width = (100 - timeLeft) + "%"; if (timeLeft <= 0) endSpeedChallenge(false); }, 100);
+            return;
+        }
+
+        if (n === 55) {
+            isPaused = true; evadeStep = 1; text.innerText = "شطورة وصلتي كبسة 55 بس تقدري تكبسيها ؟??";
+            area.innerHTML = `<button class="btn-main btn-evade" onclick="handleEvade(event)">اه ليه لا</button>`;
+            return;
+        }
+
+        if (n === 84) {
+            document.getElementById('snd-scary').play().catch(o=>{});
+            const ghostImg = document.getElementById('img-ghost'); 
+            ghostImg.className = 'ghost-img-style'; void ghostImg.offsetWidth; 
+            ghostImg.className = 'ghost-img-style ghost-active'; 
+            setTimeout(() => ghostImg.className = 'ghost-img-style', 1200);
+        }
+
+        if (n === 99 && !trap99Used) {
+            isPaused = true; trap99Used = true; clicks = 91; document.getElementById('click-count').innerText = clicks;
+            text.innerText = "ما عجبني ادائك عيدي اخر كم رسالة يلاا";
+            area.innerHTML = `<button class="btn-main" onclick="isPaused=false; nextStep();">حاضر جادو 🥹</button>`;
+            return;
+        }
+
+        if (n === 34) {
+            isPaused = true; 
+            document.body.classList.add('screen-shake-active');
+            document.body.style.backgroundColor = "var(--anger-red)";
+            document.getElementById('snd-angry').play().catch(o=>{});
+            const totemImg = document.getElementById('img-totem');
+            totemImg.className = 'totem-img-style'; void totemImg.offsetWidth; 
+            totemImg.className = 'totem-img-style anger-active';
+            text.innerText = "يابو والله تعبت لا تكوني تعملي سبام ؟؟؟!";
+            area.innerHTML = `<button class="btn-main" onclick="choice34(1, event)">والله لا سامحيني 🥹</button><button class="btn-main" style="background:#444" onclick="choice34(2, event)">اه و مالك دخل 😡</button>`;
+            return;
+        }
+
+        if (questions[n]) {
+            isPaused = true; text.innerText = questions[n].q;
+            area.innerHTML = `<input type="text" id="answer-input" placeholder="اكتبي الإجابة..." autocomplete="off"><button class="btn-main" onclick="checkAnswer(event)">تأكيد</button><button class="btn-skip" onclick="failAction(event)">تخطي (1 قلب) 💔</button>`;
+            return;
+        }
+
+        let msg = forcedMsg;
+        if (n === 67) {
+            document.getElementById('snd-67').play().catch(o=>{});
+            text.innerText = "67";
+        } else if (n <= 3) {
+            const starts = ["احبك وليه", "احبك كمان مره", "احبك ثلاث مرات ما يزبط 😋؟"];
+            text.innerText = starts[n-1];
+            document.getElementById('snd-click').currentTime = 0; document.getElementById('snd-click').play().catch(o=>{});
+        } else {
+            if (!msg || msg.trim() === "") {
+                if (available.length === 0) available = [...pool];
+                msg = available[Math.floor(Math.random() * available.length)];
+            }
+            const idx = available.indexOf(msg);
+            if(idx > -1) available.splice(idx, 1);
+            text.innerText = msg;
+
+            if (n !== 84) {
+                if (msg === "يزعد قلبق") {
+                    document.getElementById('snd-heart').currentTime = 0; document.getElementById('snd-heart').play().catch(e=>{});
+                    const imgH = document.getElementById('img-heart');
+                    imgH.className = 'fx-img'; void imgH.offsetWidth; imgH.className = 'fx-img img-heart-active';
+                    setTimeout(() => imgH.className = 'fx-img', 3000);
+                } 
+                else if (msg === "اعطيني تليفونك") {
+                    document.getElementById('snd-phone').currentTime = 0; document.getElementById('snd-phone').play().catch(e=>{});
+                    const imgP = document.getElementById('img-phone');
+                    imgP.className = 'fx-img'; void imgP.offsetWidth; imgP.className = 'fx-img img-phone-active';
+                    setTimeout(() => imgP.className = 'fx-img', 4000);
+                } 
+                else if (msg === "انت بدوي يلا انت حيه هلا هلا") {
+                    document.getElementById('snd-badawi').currentTime = 0; document.getElementById('snd-badawi').play().catch(e=>{});
+                }
+                else if (msg === "مياو مياو") {
+                    document.getElementById('snd-meow').currentTime = 0; document.getElementById('snd-meow').play().catch(e=>{});
+                }
+                else if (msg.startsWith("لو خيروني بين نور")) {
+                    document.getElementById('snd-khayarouni').currentTime = 0; document.getElementById('snd-khayarouni').play().catch(e=>{});
+                }
+                else if (msg === "حليله") {
+                    document.getElementById('snd-haleela').currentTime = 0; document.getElementById('snd-haleela').play().catch(e=>{});
+                    const peekBox = document.getElementById('peek-box');
+                    peekBox.classList.add('peek-active');
+                    
+                    document.getElementById('snd-haleela').onended = function() {
+                        peekBox.classList.remove('peek-active');
+                    };
+                }
+                else {
+                    document.getElementById('snd-click').currentTime = 0; document.getElementById('snd-click').play().catch(o=>{});
+                }
+            }
+        }
+    }
+
+    function startMosquitoMiniGame() {
+        isPaused = true;
+        mosquitoActive = true;
+        mosquitoHp = 5;
+        
+        document.getElementById('text-display').innerText = "في ناموسه تحوم حولي 🦟";
+        
+        const heartsContainer = document.getElementById('mc-hearts');
+        heartsContainer.innerHTML = "";
+        for(let i=0; i<5; i++) {
+            const h = document.createElement('div');
+            h.className = 'mc-heart';
+            heartsContainer.appendChild(h);
+        }
+
+        const mosq = document.getElementById('target-mosquito');
+        mosq.style.left = (window.innerWidth / 2 - 35) + 'px';
+        mosq.style.top = (window.innerHeight / 2 - 35) + 'px';
+        mosq.style.display = 'block';
+
+        const mosqSnd = document.getElementById('snd-mosquito');
+        if(mosqSnd) {
+            mosqSnd.currentTime = 0;
+            mosqSnd.volume = document.getElementById('vol-slider').value;
+            mosqSnd.play().catch(e=>{});
+        }
+    }
+
+    function hitMosquito(e) {
+        e.stopPropagation();
+        if(!mosquitoActive || mosquitoHp <= 0) return;
+
+        document.getElementById('snd-hit').currentTime = 0;
+        document.getElementById('snd-hit').play().catch(err=>{});
+
+        const mosq = document.getElementById('target-mosquito');
+        mosq.classList.add('mosquito-hit');
+        setTimeout(() => { mosq.classList.remove('mosquito-hit'); }, 150);
+
+        mosquitoHp--;
+        const hearts = document.getElementById('mc-hearts').getElementsByClassName('mc-heart');
+        if(hearts.length > 0) {
+            hearts[hearts.length - 1].remove();
+        }
+
+        if(mosquitoHp <= 0) {
+            // انيميشن انفجار الناموسة الأخضر/المبيد فور موتها
+            const rect = mosq.getBoundingClientRect();
+            triggerExplosionParticles(rect.left + rect.width/2, rect.top + rect.height/2, '💥', 14);
+            
+            mosq.style.display = 'none';
+            mosquitoActive = false;
+
+            const mosqSnd = document.getElementById('snd-mosquito');
+            if(mosqSnd) mosqSnd.pause();
+
+            const area = document.getElementById('interactive-area');
+            area.innerHTML = `<button class="btn-main" style="background:#2ecc71;" onclick="completeMosquitoGame(event)">يلا علكبسة الي بعديها</button>`;
+        }
+    }
+
+    function completeMosquitoGame(e) {
+        e.stopPropagation();
+        isPaused = false;
+        document.getElementById('interactive-area').innerHTML = "";
+        nextStep();
+    }
+
+    function handleQ22(choice, e) {
+        e.stopPropagation(); const box = document.getElementById('main-box'); const text = document.getElementById('text-display');
+        if (choice === 3) {
+            correctAnswersCount++;
+            document.getElementById('snd-correct').play().catch(o=>{}); box.classList.add('correct-state');
+            setTimeout(() => { isPaused = false; nextStep(); }, 600);
+        } else {
+            wrongAnswersCount++; q22WrongCount++;
+            document.getElementById('snd-wrong').play().catch(o=>{}); box.classList.remove('wrong-state'); void box.offsetWidth; box.classList.add('wrong-state');
+            setTimeout(() => box.classList.remove('wrong-state'), 1000); text.innerText = (q22WrongCount === 1) ? "امم غلط غلط ركزي يا مكعب" : "الجواب حلتيته يا هلاميه";
+        }
+    }
+
+    function endSpeedChallenge(success) {
+        clearInterval(speedTimer); speedChallengeActive = false; document.getElementById('t-container').style.display = "none"; isPaused = false;
+        const tSnd = document.getElementById('snd-timer');
+        if(tSnd) { tSnd.pause(); }
+
+        if (success) { document.getElementById('snd-correct').play().catch(o=>{}); document.getElementById('main-box').classList.add('correct-state'); setTimeout(nextStep, 600); } 
+        else { failAction(null); }
+    }
+
+    function handleEvade(e) {
+        e.stopPropagation(); const btn = e.target; const text = document.getElementById('text-display');
+        if (evadeStep === 1) { document.body.appendChild(btn); btn.style.position = "fixed"; btn.style.transition = "all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)"; text.innerText = "اوه كبستي علمكان الغلط"; evadeStep = 2; moveEvadeBtn(btn); } 
+        else if (evadeStep === 2) { text.innerText = "خلص خلص اخر مره اكبسيني"; evadeStep = 3; moveEvadeBtn(btn); } 
+        else if (evadeStep === 3) { text.innerText = "هههههه يحرام صدقت"; evadeStep = 4; moveEvadeBtn(btn); } 
+        else if (evadeStep === 4) { text.innerText = "تتوقعي الي بعدها اخر وحده ؟"; evadeStep = 5; moveEvadeBtn(btn); } 
+        else if (evadeStep === 5) { text.innerText = "يب اخر وحده"; evadeStep = 6; moveEvadeBtn(btn); } 
+        else if (evadeStep === 6) { isPaused = false; btn.remove(); nextStep(); }
+    }
+
+    function moveEvadeBtn(btn) {
+        const maxX = window.innerWidth - btn.offsetWidth - 40; const maxY = window.innerHeight - btn.offsetHeight - 40;
+        const randomX = Math.max(20, Math.floor(Math.random() * maxX)); const randomY = Math.max(20, Math.floor(Math.random() * maxY));
+        btn.style.left = randomX + "px"; btn.style.top = randomY + "px";
+    }
+
+    function clearTotemView() {
+        const totemImg = document.getElementById('img-totem'); totemImg.className = 'totem-img-style';
+        document.body.classList.remove('screen-shake-active');
+    }
+
+    function checkAnswer(e) {
+        e.stopPropagation(); 
+        const val = document.getElementById('answer-input').value.trim(); 
+        const box = document.getElementById('main-box');
+        let isCorrect = false;
+
+        if (questions[clicks].isCustomThreeWords) {
+            let tokens = val.split(/\s+/).filter(t => t !== "");
+            if (tokens.length === 3) {
+                let checkJad = tokens.some(t => ["جاد", "جادو", "جدودتي"].includes(t));
+                let checkCoffee = tokens.some(t => ["قهوه", "قهوة"].includes(t));
+                let checkCat = tokens.some(t => ["بسه", "بسة"].includes(t));
+                if (checkJad && checkCoffee && checkCat) {
+                    isCorrect = true;
+                }
+            }
+        } else {
+            isCorrect = questions[clicks].a.map(v => v.toLowerCase()).includes(val.toLowerCase());
+        }
+
+        if (isCorrect) { 
+            correctAnswersCount++;
+            document.getElementById('snd-correct').play().catch(o=>{}); box.classList.add('correct-state'); setTimeout(nextStep, 600); 
+        } else {
+            wrongAnswersCount++;
+            if (clicks === 70) {
+                document.getElementById('snd-wrong').play().catch(o=>{}); isPaused = true;
+                const text = document.getElementById('text-display'); const area = document.getElementById('interactive-area');
+                text.innerText = "يعني مسويه قادحه و قذا ؟"; area.innerHTML = `<button class="btn-main" onclick="resetGame(event)">إعادة اللعبة</button>`;
+            } else { failAction(e); }
+        }
+    }
+
+    function failAction(e) {
+        if(e) e.stopPropagation();
+        lives--; document.getElementById('lives').innerText = lives; floatNumber("-1 💔", false);
+        
+        // تفعيل أنيميشن انفجار القلب المكسور أعلى الشاشة فوق عداد القلوب بالظبط عند الضرر
+        const wrapper = document.getElementById('hearts-wrapper');
+        const wRect = wrapper.getBoundingClientRect();
+        triggerExplosionParticles(wRect.left + 20, wRect.top + 10, '💔', 10);
+
+        document.getElementById('snd-wrong').play().catch(o=>{});
+        const box = document.getElementById('main-box'); box.classList.remove('wrong-state'); void box.offsetWidth; box.classList.add('wrong-state');
+        setTimeout(() => box.classList.remove('wrong-state'), 1000);
+        if (lives <= 0) showGameOver(); else if (e && e.target.className.includes('btn-skip')) nextStep();
+    }
+
+    function nextStep() {
+        const box = document.getElementById('main-box'); box.classList.replace('slide-in', 'slide-out');
+        setTimeout(() => {
+            isPaused = false; box.classList.replace('slide-out', 'slide-in'); 
+            updateLogic(clicks + 1, "");
+            if (clicks === 100) { startGrandFinale(); }
+        }, 500);
+    }
+
+    function choice34(type, e) {
+        e.stopPropagation(); clearTotemView();
+        if (type === 1) { 
+            lives += 10; document.getElementById('lives').innerText = lives; floatNumber("+10 ❤️", true);
+            isPaused = false; document.body.style.backgroundColor = "var(--pink-dark)"; nextStep(); 
+        } else { 
+            document.body.style.backgroundColor = "var(--burgundy)";
+            const text = document.getElementById('text-display'); const area = document.getElementById('interactive-area');
+            text.innerText = "شوف القادحه يلا عيدي من اول هههههه يحرام";
+            area.innerHTML = `<button class="btn-main" onclick="resetGame(event)">إعادة اللعبة</button>`;
+        }
+    }
+
+    function startGrandFinale() {
+        isPaused = true;
+        document.body.classList.add('disco-bg');
+        document.getElementById('bounce-guide').style.display = "block";
+        document.getElementById('text-display').style.display = "none";
+        document.getElementById('interactive-area').innerHTML = "";
+        
+        const g = document.getElementById('cat-hbd');
+        g.style.display = "block";
+        cat.x = window.innerWidth / 2 - 70;
+        cat.y = window.innerHeight / 2 - 70;
+        cat.vx = (Math.random() > 0.5 ? 5 : -5);
+        cat.vy = -6;
+        g.style.left = cat.x + 'px'; g.style.top = cat.y + 'px';
+        
+        finalLoopId = requestAnimationFrame(updateCatPhysics);
+    }
+
+    function updateCatPhysics() {
+        if (!cat.isDragging) {
+            cat.x += cat.vx; cat.y += cat.vy;
+            cat.vx *= 0.985; cat.vy *= 0.985;
+
+            if (cat.x <= 0) { cat.x = 0; cat.vx *= -1; hitEdges.left = true; checkAllEdges(); }
+            else if (cat.x + cat.width >= window.innerWidth) { cat.x = window.innerWidth - cat.width; cat.vx *= -1; hitEdges.right = true; checkAllEdges(); }
+
+            if (cat.y <= 0) { cat.y = 0; cat.vy *= -1; hitEdges.top = true; checkAllEdges(); }
+            else if (cat.y + cat.height >= window.innerHeight) { cat.y = window.innerHeight - cat.height; cat.vy *= -1; hitEdges.bottom = true; checkAllEdges(); }
+        }
+
+        const g = document.getElementById('cat-hbd');
+        g.style.left = cat.x + 'px'; g.style.top = cat.y + 'px';
+        finalLoopId = requestAnimationFrame(updateCatPhysics);
+    }
+
+    function startDrag(e) {
+        e.preventDefault(); cat.isDragging = true;
+        const pointer = e.touches ? e.touches[0] : e;
+        dragData.startX = pointer.clientX - cat.x; dragData.startY = pointer.clientY - cat.y;
+        dragData.lastX = pointer.clientX; dragData.lastY = pointer.clientY;
+        dragData.lastTime = Date.now();
+
+        document.addEventListener('mousemove', dragMove); document.addEventListener('mouseup', endDrag);
+        document.addEventListener('touchmove', dragMove, { passive: false }); document.addEventListener('touchend', endDrag);
+    }
+
+    function dragMove(e) {
+        if (!cat.isDragging) return;
+        const pointer = e.touches ? e.touches[0] : e;
+        cat.x = pointer.clientX - dragData.startX; cat.y = pointer.clientY - dragData.startY;
+
+        const now = Date.now(); const dt = now - dragData.lastTime;
+        if (dt > 0) {
+            cat.vx = (pointer.clientX - dragData.lastX) / dt * 15; 
+            cat.vy = (pointer.clientY - dragData.lastY) / dt * 15;
+        }
+        dragData.lastX = pointer.clientX; dragData.lastY = pointer.clientY; dragData.lastTime = now;
+    }
+
+    function endDrag() {
+        cat.isDragging = false;
+        document.removeEventListener('mousemove', dragMove); document.removeEventListener('mouseup', endDrag);
+        document.removeEventListener('touchmove', dragMove); document.removeEventListener('touchend', endDrag);
+    }
+
+    function checkAllEdges() {
+        if (hitEdges.top && hitEdges.bottom && hitEdges.left && hitEdges.right) {
+            document.getElementById('bounce-guide').style.display = "none";
+            const area = document.getElementById('interactive-area');
+            if (!document.getElementById('btn-open-gift')) {
+                area.innerHTML = `<button id="btn-open-gift" class="btn-main" style="background:#ffeb3b; color:#333; font-size:1.4rem; border:3px solid #fff; box-shadow:0 0 20px #fff;" onclick="openLetterCard(event)">افتحي هديتك (الرسالة) 🎁</button>`;
+            }
+        }
+    }
+
+    function openLetterCard(e) {
+        e.stopPropagation();
+        cancelAnimationFrame(finalLoopId);
+        document.getElementById('cat-hbd').style.display = "none";
+        document.getElementById('main-box').style.display = "none";
+        
+        const card = document.getElementById('letter-card'); card.classList.add('open');
+        
+        const textContent = `نور، هاي جد من احلى التجارب الي عملتها بحياتي، عملت اشي احبه لشخص احبه، استمتعت كثير، و اتعبت كثير ، و بحثت كثير ،بس مو علفاضي بالعكس كل الي عملته عشان تفرحي و عشان تستمتعي كمان ، قبل بشهر تقريبا كنت قاعد افكر: اوه، نور عيد ميلادها قرب و يعني مو حلو ما اهديها اشي و برضو مو حاب اكتفي بس بكل عام و انتِ بخير ؛ فإجت فكرة اني اسويلك اللعبه.\n\nاعترف الموضوع ما كان سهل بس ممتع و محرز كمان.\n\nهاي الرسالة تعبير عن مدى حبي الك، و الكم من العشق الي بقلبي الك، نور اتمنى انّا نعيش مع بعض ان شاء الله، و بس،\n\nاحبك نور،\nجاد.`;
+        
+        let charIndex = 0; const targetDiv = document.getElementById('typed-content');
+        function typeWriter() {
+            if (charIndex < textContent.length) {
+                targetDiv.innerHTML += textContent.charAt(charIndex); charIndex++;
+                setTimeout(typeWriter, 35); 
+            }
+        }
+        typeWriter();
+    }
+
+    function showStatsSummary() {
+        document.getElementById('letter-card').classList.remove('open');
+        const statsCard = document.getElementById('stats-card'); statsCard.classList.add('open');
+        let endTime = new Date();
+        let totalSeconds = Math.floor((endTime - startTime) / 1000) || 0;
+        let mins = Math.floor(totalSeconds / 60); let secs = totalSeconds % 60;
+        let timeStr = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+        document.getElementById('stat-correct').innerText = correctAnswersCount;
+        document.getElementById('stat-wrong').innerText = wrongAnswersCount;
+        document.getElementById('stat-time').innerText = timeStr;
+        document.getElementById('stat-score').innerText = (lives < 0 ? 0 : lives);
+    }
+
+    function resetGame(e) {
+        if(e) e.stopPropagation(); location.reload();
+    }
+
+    function createParticle(x, y) {
+        const h = document.createElement('div'); h.innerHTML = currentThemeParticle; h.className = 'heart-fly';
+        h.style.left = x + 'px'; h.style.top = y + 'px'; document.body.appendChild(h); setTimeout(() => h.remove(), 800);
+    }
+
+    function showGameOver() {
+        const text = document.getElementById('text-display'); const area = document.getElementById('interactive-area');
+        clearTotemView();
+        if (!extraUsed) {
+            text.innerText = "خسرتي كل قلوبك هههه بس عشان عيد ميلادك خذي روح زيادة 🐣";
+            area.innerHTML = `<button class="btn-main" onclick="lives=1; extraUsed=true; document.getElementById('lives').innerText = lives; floatNumber('+1 🐣', true); nextStep();">أوكيه</button>`;
+        } else {
+            text.innerText = "خسرتي يا مكعب هههههههههه";
+            area.innerHTML = `<button class="btn-main" onclick="resetGame(event)">إعادة من البداية</button>`;
+        }
+    }
+</script>
+</body>
+</html>
